@@ -76,7 +76,7 @@ model Record {
     claim Claim?
 
     foundLocation   String
-    foundAt         String
+    foundAt         DateTime
     depositLocation String
     claimed         Boolean
 
