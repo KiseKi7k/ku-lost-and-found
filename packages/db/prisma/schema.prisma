@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+    id            String    @id @default(cuid())
+    name          String?
+    email         String    @unique
+    emailVerified DateTime?
+    image         String?
+    accounts      Account[]
+    sessions      Session[]
+
+    role    String
+    records Record[]
+    claims  Claim[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Account {
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String?
+    access_token      String?
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String?
+    session_state     String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@id([provider, providerAccountId])
+}
+
+model Session {
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+    identifier String
+    token      String
+    expires    DateTime
+
+    @@id([identifier, token])
+}
+
+model Record {
+    id String @id @default(cuid())
+
+    reporterId String
+    reporter   User   @relation(fields: [reporterId], references: [id])
+
+    itemName String
+    // category String
+
+    image LostItemImage?
+    claim Claim?
+
+    foundLocation   String
+    foundAt         String
+    depositLocation String
+    claimed         Boolean
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model LostItemImage {
+    id     String @id @default(cuid())
+    // vector String
+    imgUrl String
+
+    recordId String @unique
+    record   Record @relation(fields: [recordId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Claim {
+    id String @id @default(cuid())
+
+    claimerId String
+    claimer   User   @relation(fields: [claimerId], references: [id])
+
+    recordId String @unique
+    record   Record @relation(fields: [recordId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
