@@ -1,4 +1,4 @@
-import { t } from "elysia";
+import { t, type TSchema } from "elysia";
 
 export namespace UsersModel {
   export const user = t.Object({
@@ -12,4 +12,11 @@ export namespace UsersModel {
 
   export const userNotFound = t.Literal("User not found");
   export type userNotFound = typeof userNotFound.static;
+
+  export const apiResponse = <T extends TSchema>(dataSchema: T) =>
+    t.Object({
+      success: t.Literal(true),
+      message: t.Nullable(t.String()),
+      data: dataSchema,
+    });
 }

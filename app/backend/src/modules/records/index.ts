@@ -1,8 +1,6 @@
-import Elysia, { status, t } from "elysia";
-import { prisma } from "@repo/db";
+import Elysia, { t } from "elysia";
 import { RecordsModel } from "./model";
 import { Records } from "./service";
-import jwt from "@elysiajs/jwt";
 import { authService } from "../authService";
 
 export const records = new Elysia({ prefix: "/records" })
@@ -13,12 +11,16 @@ export const records = new Elysia({ prefix: "/records" })
     "/",
     async ({ query }) => {
       const records = await Records.getRecords(query);
-      return records;
+      return {
+        success: true,
+        data: records,
+        message: "",
+      };
     },
     {
       query: RecordsModel.recordsQuery,
       response: {
-        200: RecordsModel.recordsPagination,
+        200: RecordsModel.apiResponse(RecordsModel.recordsPagination),
       },
     }
   )
@@ -28,11 +30,15 @@ export const records = new Elysia({ prefix: "/records" })
     "/:id",
     async ({ params: { id } }) => {
       const record = await Records.getRecord(id);
-      return record;
+      return {
+        success: true,
+        data: record,
+        message: "",
+      };
     },
     {
       response: {
-        200: RecordsModel.record,
+        200: RecordsModel.apiResponse(RecordsModel.record),
         404: RecordsModel.recordNotFound,
       },
     }
@@ -43,13 +49,17 @@ export const records = new Elysia({ prefix: "/records" })
     "/",
     async ({ body, userId }) => {
       const record = await Records.createRecord(body, userId);
-      return record;
+      return {
+        success: true,
+        message: "",
+        data: record,
+      };
     },
     {
       auth: true,
       body: RecordsModel.createRecordBody,
       response: {
-        200: RecordsModel.record,
+        200: RecordsModel.apiResponse(RecordsModel.record),
         401: RecordsModel.unauthorized,
       },
     }
@@ -60,13 +70,17 @@ export const records = new Elysia({ prefix: "/records" })
     "/:id",
     async ({ params: { id }, body, userId }) => {
       const record = await Records.editRecord(id, body, userId!);
-      return record;
+      return {
+        success: true,
+        message: "",
+        data: record,
+      };
     },
     {
       auth: true,
       body: RecordsModel.editRecordBody,
       response: {
-        200: RecordsModel.record,
+        200: RecordsModel.apiResponse(RecordsModel.record),
         401: RecordsModel.unauthorized,
         403: t.Literal("You don't have permission to edit this record."),
         404: RecordsModel.recordNotFound,
@@ -79,12 +93,16 @@ export const records = new Elysia({ prefix: "/records" })
     "/:id",
     async ({ params: { id }, userId }) => {
       await Records.deleteRecord(id, userId!);
-      return;
+      return {
+        success: true,
+        message: "Delete successfully",
+        data: null,
+      };
     },
     {
       auth: true,
       response: {
-        200: t.Void(),
+        200: RecordsModel.apiResponse(t.Null()),
         401: RecordsModel.unauthorized,
         404: RecordsModel.recordNotFound,
       },
@@ -95,12 +113,17 @@ export const records = new Elysia({ prefix: "/records" })
   .post(
     "/:id/claim",
     async ({ params: { id }, userId }) => {
-      await Records.claimRecord(id, userId!);
+      const message = await Records.claimRecord(id, userId!);
+      return {
+        success: true,
+        message,
+        data: null,
+      };
     },
     {
       auth: true,
       response: {
-        200: t.Void(),
+        200: RecordsModel.apiResponse(t.Null()),
         401: RecordsModel.unauthorized,
         403: t.Literal(
           "You don't have permission to claim/unclaim this record."
@@ -108,4 +131,4 @@ export const records = new Elysia({ prefix: "/records" })
         404: RecordsModel.recordNotFound,
       },
     }
-  )
+  );

@@ -322,6 +322,8 @@ export abstract class Records {
           },
         }),
       ]);
+
+      return "Unclaim successfully";
     }
 
     // Claim
@@ -370,6 +372,8 @@ export abstract class Records {
           },
         }),
       ]);
+
+      return "Claim successfully";
     }
   }
 }

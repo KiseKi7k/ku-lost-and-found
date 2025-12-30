@@ -1,4 +1,4 @@
-import { t } from "elysia";
+import { t, type TSchema } from "elysia";
 
 export namespace RecordsModel {
   const user = t.Object({
@@ -73,4 +73,17 @@ export namespace RecordsModel {
 
   export const unauthorized = t.Literal("Unauthorized");
   export type unauthorized = typeof unauthorized.static;
+
+  export const apiResponse = <T extends TSchema>(dataSchema: T) =>
+    t.Object({
+      success: t.Literal(true),
+      message: t.String(),
+      data: dataSchema,
+    });
+
+  export const errorResponse = t.Object({
+    success: t.Literal(false),
+    message: t.String(),
+    data: t.Null(),
+  });
 }

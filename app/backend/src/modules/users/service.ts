@@ -2,7 +2,7 @@ import { prisma } from "@repo/db";
 import { status } from "elysia";
 import type { UsersModel } from "./model";
 
-export abstract class User {
+export abstract class Users {
   static async getUser(userId: string) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
