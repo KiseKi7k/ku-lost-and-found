@@ -12,6 +12,7 @@
     "start": "NODE_ENV=production node dist/index.js"
   },
   "dependencies": {
+    "@elysiajs/jwt": "^1.4.0",
     "@elysiajs/node": "^1.4.2",
     "@elysiajs/openapi": "^1.4.13",
     "@repo/db": "*",
