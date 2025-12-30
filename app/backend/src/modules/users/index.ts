@@ -1,21 +1,19 @@
 import { Elysia, status } from "elysia";
 import { UsersModel } from "./model.js";
 import { User } from "./service.js";
-import { authGuard } from "../authGuard/index.js";
+import { authService } from "../authService/index.js";
 
 export const users = new Elysia({ prefix: "/users" })
-  .use(authGuard)
-  .onBeforeHandle(({ user }) => {
-    if (!user) throw status(401, "Unauthorized");
-  })
+  .use(authService)
 
   .get(
     "/me",
-    async ({ user }) => {
-      const userData = await User.getUser(user.userId);
+    async ({ userId }) => {
+      const userData = await User.getUser(userId);
       return userData;
     },
     {
+      auth: true,
       response: {
         200: UsersModel.user,
         404: UsersModel.userNotFound,

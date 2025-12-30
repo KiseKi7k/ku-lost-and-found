@@ -3,39 +3,10 @@ import { prisma } from "@repo/db";
 import { RecordsModel } from "./model";
 import { Records } from "./service";
 import jwt from "@elysiajs/jwt";
+import { authService } from "../authService";
 
 export const records = new Elysia({ prefix: "/records" })
-  .use(
-    jwt({
-      secret: process.env.NEXTAUTH_SECRET!,
-    })
-  )
-  .derive(async ({ jwt, headers }) => {
-    const auth = headers["authorization"];
-    if (!auth) return { userId: "" };
-    const token = auth.replace("Bearer ", "");
-
-    const payload = await jwt.verify(token);
-    if (!payload) return { userId: "" };
-
-    const userId = payload.userId as string;
-    if (!userId) return { userId: "" };
-
-    const user = await prisma.user.findFirst({
-      where: { id: userId },
-      select: {
-        id: true,
-      },
-    });
-
-    return { userId: user?.id || "" };
-  })
-
-  .macro("auth", () => ({
-    async beforeHandle({ userId }) {
-      if (!userId) throw status(401);
-    },
-  }))
+  .use(authService)
 
   // Get records pagination and sort by createdAt
   .get(
