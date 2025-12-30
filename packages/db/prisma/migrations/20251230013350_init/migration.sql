@@ -55,7 +55,7 @@ CREATE TABLE "Record" (
     "reporterId" TEXT NOT NULL,
     "itemName" TEXT NOT NULL,
     "foundLocation" TEXT NOT NULL,
-    "foundAt" TEXT NOT NULL,
+    "foundAt" TIMESTAMP(3) NOT NULL,
     "depositLocation" TEXT NOT NULL,
     "claimed" BOOLEAN NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/client"
-import type * as $Enums from "../enums.js"
-import type * as Prisma from "../internal/prismaNamespace.js"
+import type * as $Enums from "../enums"
+import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model Record
@@ -29,7 +29,7 @@ export type RecordMinAggregateOutputType = {
   reporterId: string | null
   itemName: string | null
   foundLocation: string | null
-  foundAt: string | null
+  foundAt: Date | null
   depositLocation: string | null
   claimed: boolean | null
   createdAt: Date | null
@@ -41,7 +41,7 @@ export type RecordMaxAggregateOutputType = {
   reporterId: string | null
   itemName: string | null
   foundLocation: string | null
-  foundAt: string | null
+  foundAt: Date | null
   depositLocation: string | null
   claimed: boolean | null
   createdAt: Date | null
@@ -176,7 +176,7 @@ export type RecordGroupByOutputType = {
   reporterId: string
   itemName: string
   foundLocation: string
-  foundAt: string
+  foundAt: Date
   depositLocation: string
   claimed: boolean
   createdAt: Date
@@ -209,7 +209,7 @@ export type RecordWhereInput = {
   reporterId?: Prisma.StringFilter<"Record"> | string
   itemName?: Prisma.StringFilter<"Record"> | string
   foundLocation?: Prisma.StringFilter<"Record"> | string
-  foundAt?: Prisma.StringFilter<"Record"> | string
+  foundAt?: Prisma.DateTimeFilter<"Record"> | Date | string
   depositLocation?: Prisma.StringFilter<"Record"> | string
   claimed?: Prisma.BoolFilter<"Record"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Record"> | Date | string
@@ -242,7 +242,7 @@ export type RecordWhereUniqueInput = Prisma.AtLeast<{
   reporterId?: Prisma.StringFilter<"Record"> | string
   itemName?: Prisma.StringFilter<"Record"> | string
   foundLocation?: Prisma.StringFilter<"Record"> | string
-  foundAt?: Prisma.StringFilter<"Record"> | string
+  foundAt?: Prisma.DateTimeFilter<"Record"> | Date | string
   depositLocation?: Prisma.StringFilter<"Record"> | string
   claimed?: Prisma.BoolFilter<"Record"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Record"> | Date | string
@@ -275,7 +275,7 @@ export type RecordScalarWhereWithAggregatesInput = {
   reporterId?: Prisma.StringWithAggregatesFilter<"Record"> | string
   itemName?: Prisma.StringWithAggregatesFilter<"Record"> | string
   foundLocation?: Prisma.StringWithAggregatesFilter<"Record"> | string
-  foundAt?: Prisma.StringWithAggregatesFilter<"Record"> | string
+  foundAt?: Prisma.DateTimeWithAggregatesFilter<"Record"> | Date | string
   depositLocation?: Prisma.StringWithAggregatesFilter<"Record"> | string
   claimed?: Prisma.BoolWithAggregatesFilter<"Record"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Record"> | Date | string
@@ -286,7 +286,7 @@ export type RecordCreateInput = {
   id?: string
   itemName: string
   foundLocation: string
-  foundAt: string
+  foundAt: Date | string
   depositLocation: string
   claimed: boolean
   createdAt?: Date | string
@@ -301,7 +301,7 @@ export type RecordUncheckedCreateInput = {
   reporterId: string
   itemName: string
   foundLocation: string
-  foundAt: string
+  foundAt: Date | string
   depositLocation: string
   claimed: boolean
   createdAt?: Date | string
@@ -314,7 +314,7 @@ export type RecordUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   itemName?: Prisma.StringFieldUpdateOperationsInput | string
   foundLocation?: Prisma.StringFieldUpdateOperationsInput | string
-  foundAt?: Prisma.StringFieldUpdateOperationsInput | string
+  foundAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   depositLocation?: Prisma.StringFieldUpdateOperationsInput | string
   claimed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -329,7 +329,7 @@ export type RecordUncheckedUpdateInput = {
   reporterId?: Prisma.StringFieldUpdateOperationsInput | string
   itemName?: Prisma.StringFieldUpdateOperationsInput | string
   foundLocation?: Prisma.StringFieldUpdateOperationsInput | string
-  foundAt?: Prisma.StringFieldUpdateOperationsInput | string
+  foundAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   depositLocation?: Prisma.StringFieldUpdateOperationsInput | string
   claimed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -343,7 +343,7 @@ export type RecordCreateManyInput = {
   reporterId: string
   itemName: string
   foundLocation: string
-  foundAt: string
+  foundAt: Date | string
   depositLocation: string
   claimed: boolean
   createdAt?: Date | string
@@ -354,7 +354,7 @@ export type RecordUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   itemName?: Prisma.StringFieldUpdateOperationsInput | string
   foundLocation?: Prisma.StringFieldUpdateOperationsInput | string
-  foundAt?: Prisma.StringFieldUpdateOperationsInput | string
+  foundAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   depositLocation?: Prisma.StringFieldUpdateOperationsInput | string
   claimed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -366,7 +366,7 @@ export type RecordUncheckedUpdateManyInput = {
   reporterId?: Prisma.StringFieldUpdateOperationsInput | string
   itemName?: Prisma.StringFieldUpdateOperationsInput | string
   foundLocation?: Prisma.StringFieldUpdateOperationsInput | string
-  foundAt?: Prisma.StringFieldUpdateOperationsInput | string
+  foundAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   depositLocation?: Prisma.StringFieldUpdateOperationsInput | string
   claimed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -502,7 +502,7 @@ export type RecordCreateWithoutReporterInput = {
   id?: string
   itemName: string
   foundLocation: string
-  foundAt: string
+  foundAt: Date | string
   depositLocation: string
   claimed: boolean
   createdAt?: Date | string
@@ -515,7 +515,7 @@ export type RecordUncheckedCreateWithoutReporterInput = {
   id?: string
   itemName: string
   foundLocation: string
-  foundAt: string
+  foundAt: Date | string
   depositLocation: string
   claimed: boolean
   createdAt?: Date | string
@@ -558,7 +558,7 @@ export type RecordScalarWhereInput = {
   reporterId?: Prisma.StringFilter<"Record"> | string
   itemName?: Prisma.StringFilter<"Record"> | string
   foundLocation?: Prisma.StringFilter<"Record"> | string
-  foundAt?: Prisma.StringFilter<"Record"> | string
+  foundAt?: Prisma.DateTimeFilter<"Record"> | Date | string
   depositLocation?: Prisma.StringFilter<"Record"> | string
   claimed?: Prisma.BoolFilter<"Record"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Record"> | Date | string
@@ -569,7 +569,7 @@ export type RecordCreateWithoutImageInput = {
   id?: string
   itemName: string
   foundLocation: string
-  foundAt: string
+  foundAt: Date | string
   depositLocation: string
   claimed: boolean
   createdAt?: Date | string
@@ -583,7 +583,7 @@ export type RecordUncheckedCreateWithoutImageInput = {
   reporterId: string
   itemName: string
   foundLocation: string
-  foundAt: string
+  foundAt: Date | string
   depositLocation: string
   claimed: boolean
   createdAt?: Date | string
@@ -611,7 +611,7 @@ export type RecordUpdateWithoutImageInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   itemName?: Prisma.StringFieldUpdateOperationsInput | string
   foundLocation?: Prisma.StringFieldUpdateOperationsInput | string
-  foundAt?: Prisma.StringFieldUpdateOperationsInput | string
+  foundAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   depositLocation?: Prisma.StringFieldUpdateOperationsInput | string
   claimed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -625,7 +625,7 @@ export type RecordUncheckedUpdateWithoutImageInput = {
   reporterId?: Prisma.StringFieldUpdateOperationsInput | string
   itemName?: Prisma.StringFieldUpdateOperationsInput | string
   foundLocation?: Prisma.StringFieldUpdateOperationsInput | string
-  foundAt?: Prisma.StringFieldUpdateOperationsInput | string
+  foundAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   depositLocation?: Prisma.StringFieldUpdateOperationsInput | string
   claimed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -637,7 +637,7 @@ export type RecordCreateWithoutClaimInput = {
   id?: string
   itemName: string
   foundLocation: string
-  foundAt: string
+  foundAt: Date | string
   depositLocation: string
   claimed: boolean
   createdAt?: Date | string
@@ -651,7 +651,7 @@ export type RecordUncheckedCreateWithoutClaimInput = {
   reporterId: string
   itemName: string
   foundLocation: string
-  foundAt: string
+  foundAt: Date | string
   depositLocation: string
   claimed: boolean
   createdAt?: Date | string
@@ -679,7 +679,7 @@ export type RecordUpdateWithoutClaimInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   itemName?: Prisma.StringFieldUpdateOperationsInput | string
   foundLocation?: Prisma.StringFieldUpdateOperationsInput | string
-  foundAt?: Prisma.StringFieldUpdateOperationsInput | string
+  foundAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   depositLocation?: Prisma.StringFieldUpdateOperationsInput | string
   claimed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -693,7 +693,7 @@ export type RecordUncheckedUpdateWithoutClaimInput = {
   reporterId?: Prisma.StringFieldUpdateOperationsInput | string
   itemName?: Prisma.StringFieldUpdateOperationsInput | string
   foundLocation?: Prisma.StringFieldUpdateOperationsInput | string
-  foundAt?: Prisma.StringFieldUpdateOperationsInput | string
+  foundAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   depositLocation?: Prisma.StringFieldUpdateOperationsInput | string
   claimed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -705,7 +705,7 @@ export type RecordCreateManyReporterInput = {
   id?: string
   itemName: string
   foundLocation: string
-  foundAt: string
+  foundAt: Date | string
   depositLocation: string
   claimed: boolean
   createdAt?: Date | string
@@ -716,7 +716,7 @@ export type RecordUpdateWithoutReporterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   itemName?: Prisma.StringFieldUpdateOperationsInput | string
   foundLocation?: Prisma.StringFieldUpdateOperationsInput | string
-  foundAt?: Prisma.StringFieldUpdateOperationsInput | string
+  foundAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   depositLocation?: Prisma.StringFieldUpdateOperationsInput | string
   claimed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -729,7 +729,7 @@ export type RecordUncheckedUpdateWithoutReporterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   itemName?: Prisma.StringFieldUpdateOperationsInput | string
   foundLocation?: Prisma.StringFieldUpdateOperationsInput | string
-  foundAt?: Prisma.StringFieldUpdateOperationsInput | string
+  foundAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   depositLocation?: Prisma.StringFieldUpdateOperationsInput | string
   claimed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -742,7 +742,7 @@ export type RecordUncheckedUpdateManyWithoutReporterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   itemName?: Prisma.StringFieldUpdateOperationsInput | string
   foundLocation?: Prisma.StringFieldUpdateOperationsInput | string
-  foundAt?: Prisma.StringFieldUpdateOperationsInput | string
+  foundAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   depositLocation?: Prisma.StringFieldUpdateOperationsInput | string
   claimed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -829,7 +829,7 @@ export type $RecordPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     reporterId: string
     itemName: string
     foundLocation: string
-    foundAt: string
+    foundAt: Date
     depositLocation: string
     claimed: boolean
     createdAt: Date
@@ -1264,7 +1264,7 @@ export interface RecordFieldRefs {
   readonly reporterId: Prisma.FieldRef<"Record", 'String'>
   readonly itemName: Prisma.FieldRef<"Record", 'String'>
   readonly foundLocation: Prisma.FieldRef<"Record", 'String'>
-  readonly foundAt: Prisma.FieldRef<"Record", 'String'>
+  readonly foundAt: Prisma.FieldRef<"Record", 'DateTime'>
   readonly depositLocation: Prisma.FieldRef<"Record", 'String'>
   readonly claimed: Prisma.FieldRef<"Record", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Record", 'DateTime'>
