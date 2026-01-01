@@ -44,9 +44,7 @@
     "allowImportingTsExtensions": true,
     "noEmit": true,
     "paths": {
-      "@/*": ["./src/*"],
-      "@/utils/*": ["./src/utils/*"],
-      "@/modules/*": ["./src/modules/*"]
+      "@/*": ["./src/*"]
     }
   }
 }
