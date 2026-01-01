@@ -1,17 +1,12 @@
-import { t, type TSchema } from "elysia";
+import { t } from "elysia";
+import { UsersModel } from "../users/model";
+import ApiResponse from "@/utils/apiResponse";
 
 export namespace RecordsModel {
-  const user = t.Object({
-    id: t.String(),
-    name: t.Nullable(t.String()),
-    image: t.Nullable(t.String()),
-    email: t.String(),
-  });
-  type user = typeof user.static;
 
   export const record = t.Object({
     id: t.String(),
-    reporter: user,
+    reporter: UsersModel.user,
     image: t.Nullable(
       t.Object({
         imgUrl: t.String(),
@@ -19,7 +14,7 @@ export namespace RecordsModel {
     ),
     claim: t.Nullable(
       t.Object({
-        claimer: user,
+        claimer: UsersModel.user,
         createdAt: t.Date(),
       })
     ),
@@ -34,7 +29,7 @@ export namespace RecordsModel {
   export const recordsPagination = t.Object({
     page: t.Number(),
     limit: t.Number(),
-    data: t.Array(record),
+    records: t.Array(record),
   });
   export type recordsPagination = typeof recordsPagination.static;
 
@@ -68,22 +63,12 @@ export namespace RecordsModel {
   });
   export type editRecordBody = typeof editRecordBody.static;
 
-  export const recordNotFound = t.Literal("Record not found");
-  export type recordNotFound = typeof recordNotFound.static;
+  export const recordNotFound = ApiResponse.error("Record not found")
+  export type recordNotFound = typeof recordNotFound.static
 
-  export const unauthorized = t.Literal("Unauthorized");
-  export type unauthorized = typeof unauthorized.static;
+  export const unauthorized = ApiResponse.error("Unauthorized")
+  export type unauthorized = typeof unauthorized.static
 
-  export const apiResponse = <T extends TSchema>(dataSchema: T) =>
-    t.Object({
-      success: t.Literal(true),
-      message: t.String(),
-      data: dataSchema,
-    });
-
-  export const errorResponse = t.Object({
-    success: t.Literal(false),
-    message: t.String(),
-    data: t.Null(),
-  });
+  export const noPermission = ApiResponse.error("No permission")
+  export type noPermission = typeof noPermission.static
 }

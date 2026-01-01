@@ -1,26 +1,25 @@
+import authService from "@/utils/authService";
 import Elysia, { t } from "elysia";
 import { RecordsModel } from "./model";
 import { Records } from "./service";
-import { authService } from "../authService";
+import wrapSuccess from "@/utils/wrapSuccess";
+import ApiResponse from "@/utils/apiResponse";
 
 export const records = new Elysia({ prefix: "/records" })
   .use(authService)
+  .use(wrapSuccess)
 
   // Get records pagination and sort by createdAt
   .get(
     "/",
-    async ({ query }) => {
+    async ({ query, wrapSuccess }) => {
       const records = await Records.getRecords(query);
-      return {
-        success: true,
-        data: records,
-        message: "",
-      };
+      return wrapSuccess(records)
     },
     {
       query: RecordsModel.recordsQuery,
       response: {
-        200: RecordsModel.apiResponse(RecordsModel.recordsPagination),
+        200: ApiResponse.success(RecordsModel.recordsPagination),
       },
     }
   )
@@ -28,17 +27,13 @@ export const records = new Elysia({ prefix: "/records" })
   // Get record by id
   .get(
     "/:id",
-    async ({ params: { id } }) => {
+    async ({ params: { id }, wrapSuccess }) => {
       const record = await Records.getRecord(id);
-      return {
-        success: true,
-        data: record,
-        message: "",
-      };
+      return wrapSuccess(record)
     },
     {
       response: {
-        200: RecordsModel.apiResponse(RecordsModel.record),
+        200: ApiResponse.success(RecordsModel.record),
         404: RecordsModel.recordNotFound,
       },
     }
@@ -47,19 +42,15 @@ export const records = new Elysia({ prefix: "/records" })
   // Create new record
   .post(
     "/",
-    async ({ body, userId }) => {
+    async ({ body, userId, wrapSuccess }) => {
       const record = await Records.createRecord(body, userId);
-      return {
-        success: true,
-        message: "",
-        data: record,
-      };
+      return wrapSuccess(record)
     },
     {
       auth: true,
       body: RecordsModel.createRecordBody,
       response: {
-        200: RecordsModel.apiResponse(RecordsModel.record),
+        200: ApiResponse.success(RecordsModel.record),
         401: RecordsModel.unauthorized,
       },
     }
@@ -68,21 +59,17 @@ export const records = new Elysia({ prefix: "/records" })
   // Edit record
   .patch(
     "/:id",
-    async ({ params: { id }, body, userId }) => {
+    async ({ params: { id }, body, userId, wrapSuccess }) => {
       const record = await Records.editRecord(id, body, userId!);
-      return {
-        success: true,
-        message: "",
-        data: record,
-      };
+      return wrapSuccess(record)
     },
     {
       auth: true,
       body: RecordsModel.editRecordBody,
       response: {
-        200: RecordsModel.apiResponse(RecordsModel.record),
+        200: ApiResponse.success(RecordsModel.record),
         401: RecordsModel.unauthorized,
-        403: t.Literal("You don't have permission to edit this record."),
+        403: RecordsModel.noPermission,
         404: RecordsModel.recordNotFound,
       },
     }
@@ -91,18 +78,14 @@ export const records = new Elysia({ prefix: "/records" })
   // Delete record
   .delete(
     "/:id",
-    async ({ params: { id }, userId }) => {
+    async ({ params: { id }, userId, wrapSuccess }) => {
       await Records.deleteRecord(id, userId!);
-      return {
-        success: true,
-        message: "Delete successfully",
-        data: null,
-      };
+      return wrapSuccess(null, "Deleted successfully")
     },
     {
       auth: true,
       response: {
-        200: RecordsModel.apiResponse(t.Null()),
+        200: ApiResponse.success(t.Null()),
         401: RecordsModel.unauthorized,
         404: RecordsModel.recordNotFound,
       },
@@ -112,22 +95,17 @@ export const records = new Elysia({ prefix: "/records" })
   // Claim and unclaim Record
   .post(
     "/:id/claim",
-    async ({ params: { id }, userId }) => {
-      const message = await Records.claimRecord(id, userId!);
-      return {
-        success: true,
-        message,
-        data: null,
-      };
+    async ({ params: { id }, userId, wrapSuccess }) => {
+      const claimed = await Records.claimRecord(id, userId);
+      const message = claimed ? "Claimed successfully" : "Unclaimed successfully" as const
+      return wrapSuccess(claimed, message)
     },
     {
       auth: true,
       response: {
-        200: RecordsModel.apiResponse(t.Null()),
+        200: ApiResponse.success(t.Boolean()),
         401: RecordsModel.unauthorized,
-        403: t.Literal(
-          "You don't have permission to claim/unclaim this record."
-        ),
+        403: RecordsModel.noPermission,
         404: RecordsModel.recordNotFound,
       },
     }

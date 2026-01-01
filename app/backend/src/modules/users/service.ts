@@ -3,7 +3,7 @@ import { status } from "elysia";
 import type { UsersModel } from "./model";
 
 export abstract class Users {
-  static async getUser(userId: string) {
+  static async getUser(userId: string): Promise<UsersModel.user> {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -15,7 +15,10 @@ export abstract class Users {
       },
     });
     if (!user) {
-      throw status(404, "User not found" satisfies UsersModel.userNotFound);
+      throw status(
+        404,
+        "User not found" satisfies UsersModel.userNotFound["message"]
+      );
     }
 
     return user;

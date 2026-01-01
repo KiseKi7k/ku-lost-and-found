@@ -1,25 +1,24 @@
-import { Elysia } from "elysia";
-import { UsersModel } from "./model.js";
-import { Users } from "./service.js";
-import { authService } from "../authService/index.js";
+import ApiResponse from "@/utils/apiResponse";
+import authService from "@/utils/authService";
+import wrapSuccess from "@/utils/wrapSuccess";
+import Elysia from "elysia";
+import { UsersModel } from "./model";
+import { Users } from "./service";
+
 
 export const users = new Elysia({ prefix: "/users" })
   .use(authService)
-
+  .use(wrapSuccess)
   .get(
     "/me",
-    async ({ userId }) => {
+    async ({ userId, wrapSuccess }) => {
       const user = await Users.getUser(userId);
-      return {
-        success: true,
-        data: user,
-        message: "",
-      };
+      return wrapSuccess(user);
     },
     {
       auth: true,
       response: {
-        200: UsersModel.apiResponse(UsersModel.user),
+        200: ApiResponse.success(UsersModel.user),
         404: UsersModel.userNotFound,
       },
     }
@@ -27,17 +26,13 @@ export const users = new Elysia({ prefix: "/users" })
 
   .get(
     "/:id",
-    async ({ params: { id } }) => {
+    async ({ params: { id }, wrapSuccess }) => {
       const user = await Users.getUser(id);
-      return {
-        success: true,
-        data: user,
-        message: "",
-      };
+      return wrapSuccess(user);
     },
     {
       response: {
-        200: UsersModel.apiResponse(UsersModel.user),
+        200: ApiResponse.success(UsersModel.user),
         404: UsersModel.userNotFound,
       },
     }
