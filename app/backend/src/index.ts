@@ -21,14 +21,12 @@ const app = new Elysia({ adapter: node() })
     };
   })
 
-  .group("/api", (api) => {
-    api.use(users);
-    api.use(records);
-    return api;
-  })
+  .group("/api/v1", (app) => app.use(users).use(records))
 
   .get("/", () => "Hello Elysia")
 
   .listen(8000, ({ hostname, port }) => {
     console.log(`🦊 Elysia is running at ${hostname}:${port}`);
   });
+
+export type App = typeof app;

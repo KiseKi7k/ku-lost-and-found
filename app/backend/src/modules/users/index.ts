@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 import { UsersModel } from "./model.js";
 import { Users } from "./service.js";
-import { authService } from "../authService/index.js";
+import { authService } from "../../utils/authService/index.js";
 
 export const users = new Elysia({ prefix: "/users" })
   .use(authService)
@@ -10,16 +10,12 @@ export const users = new Elysia({ prefix: "/users" })
     "/me",
     async ({ userId }) => {
       const user = await Users.getUser(userId);
-      return {
-        success: true,
-        data: user,
-        message: "",
-      };
+      return user;
     },
     {
       auth: true,
       response: {
-        200: UsersModel.apiResponse(UsersModel.user),
+        200: UsersModel.user,
         404: UsersModel.userNotFound,
       },
     }
@@ -29,15 +25,11 @@ export const users = new Elysia({ prefix: "/users" })
     "/:id",
     async ({ params: { id } }) => {
       const user = await Users.getUser(id);
-      return {
-        success: true,
-        data: user,
-        message: "",
-      };
+      return user;
     },
     {
       response: {
-        200: UsersModel.apiResponse(UsersModel.user),
+        200: UsersModel.user,
         404: UsersModel.userNotFound,
       },
     }

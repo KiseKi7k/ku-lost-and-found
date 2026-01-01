@@ -5,7 +5,7 @@ import { prisma } from "@repo/db";
 export const authService = new Elysia()
   .use(
     jwt({
-      secret: process.env.NEXTAUTH_SECRET!,
+      secret: process.env["NEXTAUTH_SECRET"]!,
     })
   )
   .derive(async ({ jwt, headers }) => {
@@ -16,7 +16,7 @@ export const authService = new Elysia()
     const payload = await jwt.verify(token);
     if (!payload) return { userId: "" };
 
-    const userId = payload.userId as string;
+    const userId = payload["userId"] as string;
     if (!userId) return { userId: "" };
 
     const user = await prisma.user.findFirst({

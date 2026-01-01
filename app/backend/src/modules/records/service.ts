@@ -2,41 +2,53 @@ import { prisma } from "@repo/db";
 import { status } from "elysia";
 import type { RecordsModel } from "./model";
 
+const recordInclude = {
+  reporter: {
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      image: true,
+      role: true,
+    },
+  },
+  claim: {
+    select: {
+      id: true,
+      claimer: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          role: true,
+        },
+      },
+      createdAt: true,
+    },
+  },
+  image: {
+    select: {
+      id: true,
+      imgUrl: true,
+    },
+  },
+};
+
 export abstract class Records {
-  static async getRecord(id: string) {
+  static async getRecord(id: string): Promise<RecordsModel.record> {
     const record = await prisma.record
       .findFirstOrThrow({
         where: {
           id,
         },
-        include: {
-          reporter: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              image: true,
-            },
-          },
-          claim: {
-            select: {
-              id: true,
-              claimer: {
-                select: { id: true, name: true, email: true, image: true },
-              },
-              createdAt: true,
-            },
-          },
-          image: {
-            select: {
-              id: true,
-              imgUrl: true,
-            },
-          },
-        },
+        include: recordInclude,
       })
       .catch(() => {
-        throw status(404, "Record not found");
+        throw status(
+          404,
+          "Record not found" satisfies RecordsModel.recordNotFound
+        );
       });
     return record;
   }
@@ -50,7 +62,7 @@ export abstract class Records {
     order = "desc",
     page = 1,
     limit = 20,
-  }: RecordsModel.recordsQuery) {
+  }: RecordsModel.recordsQuery): Promise<RecordsModel.recordsPagination> {
     const offset = (page - 1) * limit;
 
     const records = await prisma.record.findMany({
@@ -69,31 +81,7 @@ export abstract class Records {
         [sort]: order,
       },
 
-      include: {
-        reporter: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            image: true,
-          },
-        },
-        claim: {
-          select: {
-            id: true,
-            claimer: {
-              select: { id: true, name: true, email: true, image: true },
-            },
-            createdAt: true,
-          },
-        },
-        image: {
-          select: {
-            id: true,
-            imgUrl: true,
-          },
-        },
-      },
+      include: recordInclude,
       take: limit,
       skip: offset,
     });
@@ -101,14 +89,14 @@ export abstract class Records {
     return {
       page,
       limit,
-      data: records || [],
+      records: records || [],
     };
   }
 
   static async createRecord(
     body: RecordsModel.createRecordBody,
     userId: string
-  ) {
+  ): Promise<RecordsModel.record> {
     const { imgUrl, ...recordData } = body;
 
     const record = await prisma.$transaction(async (tx) => {
@@ -129,38 +117,12 @@ export abstract class Records {
       });
 
       // Return the newly created record with related data
-      const newRecord = await tx.record.findUnique({
+      const newRecord = await tx.record.findUniqueOrThrow({
         where: { id: record.id },
-        include: {
-          reporter: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              image: true,
-            },
-          },
-          claim: {
-            select: {
-              id: true,
-              claimer: {
-                select: { id: true, name: true, email: true, image: true },
-              },
-              createdAt: true,
-            },
-          },
-          image: {
-            select: {
-              id: true,
-              imgUrl: true,
-            },
-          },
-        },
+        include: recordInclude,
       });
       return newRecord;
     });
-
-    if (!record) throw status(500, "Failed to create record");
 
     return record;
   }
@@ -169,7 +131,7 @@ export abstract class Records {
     recordId: string,
     body: RecordsModel.editRecordBody,
     userId: string
-  ) {
+  ): Promise<RecordsModel.record> {
     const { imgUrl, ...recordData } = body;
 
     const record = await prisma.record.findUnique({
@@ -182,9 +144,12 @@ export abstract class Records {
       },
     });
 
-    if (!record) throw status(404, "Record not found");
-    if (record?.reporterId !== userId)
-      throw status(403, "You don't have permission to edit this record.");
+    if (!record)
+      throw status(
+        404,
+        "Record not found" satisfies RecordsModel.recordNotFound
+      );
+    if (record?.reporterId !== userId) throw status(403);
 
     const newRecord = await prisma.$transaction(async (tx) => {
       // Update image
@@ -207,31 +172,7 @@ export abstract class Records {
         data: {
           ...recordData,
         },
-        include: {
-          reporter: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              image: true,
-            },
-          },
-          claim: {
-            select: {
-              id: true,
-              claimer: {
-                select: { id: true, name: true, email: true, image: true },
-              },
-              createdAt: true,
-            },
-          },
-          image: {
-            select: {
-              id: true,
-              imgUrl: true,
-            },
-          },
-        },
+        include: recordInclude,
       });
       return newRecord;
     });
@@ -249,9 +190,13 @@ export abstract class Records {
       },
     });
 
-    if (!record) throw status(404, "Record not found");
+    if (!record)
+      throw status(
+        404,
+        "Record not found" satisfies RecordsModel.recordNotFound
+      );
     if (record?.reporterId !== userId)
-      throw status(403, "You don't have permission to delete this record.");
+      throw status(403, "No permission" satisfies RecordsModel.noPermission);
 
     await prisma.record.delete({
       where: {
@@ -272,12 +217,16 @@ export abstract class Records {
       },
     });
 
-    if (!record) throw status(404, "Record not found");
+    if (!record)
+      throw status(
+        404,
+        "Record not found" satisfies RecordsModel.recordNotFound
+      );
 
     // Unclaim
     if (record.claim) {
       if (record.claim.claimerId !== userId)
-        throw status(403, "You don't have permission to unclaim this record.");
+        throw status(403, "No permission" satisfies RecordsModel.noPermission);
 
       await prisma.$transaction([
         // Delete claim
@@ -295,35 +244,10 @@ export abstract class Records {
           data: {
             claimed: false,
           },
-          include: {
-            reporter: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                image: true,
-              },
-            },
-            claim: {
-              select: {
-                id: true,
-                claimer: {
-                  select: { id: true, name: true, email: true, image: true },
-                },
-                createdAt: true,
-              },
-            },
-            image: {
-              select: {
-                id: true,
-                imgUrl: true,
-              },
-            },
-          },
         }),
       ]);
 
-      return "Unclaim successfully";
+      return false;
     }
 
     // Claim
@@ -345,35 +269,10 @@ export abstract class Records {
           data: {
             claimed: true,
           },
-          include: {
-            reporter: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                image: true,
-              },
-            },
-            claim: {
-              select: {
-                id: true,
-                claimer: {
-                  select: { id: true, name: true, email: true, image: true },
-                },
-                createdAt: true,
-              },
-            },
-            image: {
-              select: {
-                id: true,
-                imgUrl: true,
-              },
-            },
-          },
         }),
       ]);
 
-      return "Claim successfully";
+      return true;
     }
   }
 }
