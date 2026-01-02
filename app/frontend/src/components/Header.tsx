@@ -39,7 +39,7 @@ const Header = () => {
         <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
           <PopoverTrigger asChild>
             <Avatar className="border-2 border-primary/20 relative h-10 w-10 rounded-full hover:ring-2 hover:ring-primary/20 transition-all ml-auto">
-              <AvatarImage src={mockUser.image || `@/user-placeholder.jpg`} />
+              <AvatarImage src={mockUser.image} />
               <AvatarFallback className="bg-primary text-primary-foreground font-medium flex h-full items-center justify-center rounded-full">
                 <User className="h-5 w-5 text-white" />
               </AvatarFallback>
